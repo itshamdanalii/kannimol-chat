@@ -1,0 +1,11 @@
+{
+  "name": "Kanni Mol Chat",
+  "short_name": "Kunni Chat",
+  "description": "Simple, private conversations with your people.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#f7f4ee",
+  "orientation": "portrait-primary",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
