@@ -52,6 +52,8 @@ function App() {
   return <Intro onStart={() => setScreen('auth')} />
 }
 
+export default App
+
 function Brand({ compact = false }: { compact?: boolean }) { return <div className={`brand ${compact ? 'compact' : ''}`}><div className="brand-mark"><MessageCircle size={compact ? 20 : 28} /></div><span>Kanni Mol Chat</span></div> }
 function Footer() { return <footer>{footer}</footer> }
 function Intro({ onStart }: { onStart: () => void }) { return <main className="public-page intro-page"><div className="intro-art"><span className="orbit orbit-one" /><span className="orbit orbit-two" /><div className="chat-orb"><MessageCircle size={52} /></div></div><div className="intro-copy"><Brand /><p className="eyebrow">A quieter way to stay close</p><h1>Chat. Connect.<br /><em>Stay connected.</em></h1><p className="muted lead">A warm, simple place for conversations that matter.</p><button className="primary wide" onClick={onStart}>Get started <ArrowUpRight size={18} /></button></div><Footer /></main> }
