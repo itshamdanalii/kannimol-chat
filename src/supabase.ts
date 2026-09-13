@@ -60,10 +60,13 @@ export type Database = {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-let client: SupabaseClient<Database> | null = null
+// The project schema is managed in Supabase SQL. Keep this client boundary permissive
+// until generated Supabase types are added, instead of allowing an incomplete local
+// schema type to make every query infer as never during the Vercel build.
+let client: SupabaseClient<any> | null = null
 if (supabaseUrl && supabaseAnonKey) {
   try {
-    client = createClient<Database>(supabaseUrl, supabaseAnonKey)
+    client = createClient<any>(supabaseUrl, supabaseAnonKey)
   } catch (error) {
     console.error('Supabase client configuration is invalid', error)
   }
