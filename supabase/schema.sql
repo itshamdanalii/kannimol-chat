@@ -145,12 +145,16 @@ drop policy if exists reactions_member on public.message_reactions;
 create policy reactions_member on public.message_reactions for all to authenticated using (user_id = auth.uid() and exists (select 1 from public.messages m join public.conversation_members cm on cm.conversation_id = m.conversation_id where m.id = message_id and cm.user_id = auth.uid())) with check (user_id = auth.uid());
 drop policy if exists blocks_self on public.user_blocks;
 create policy blocks_self on public.user_blocks for all to authenticated using (blocker_id = auth.uid()) with check (blocker_id = auth.uid());
+drop policy if exists admins_self_read on public.app_admins;
 create policy admins_self_read on public.app_admins for select to authenticated using (user_id = auth.uid());
 
 -- Storage: create a public bucket named avatars in the dashboard, then apply these policies.
 insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true) on conflict (id) do nothing;
+drop policy if exists avatar_read on storage.objects;
 create policy avatar_read on storage.objects for select to authenticated using (bucket_id = 'avatars');
+drop policy if exists avatar_upload on storage.objects;
 create policy avatar_upload on storage.objects for insert to authenticated with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists avatar_update on storage.objects;
 create policy avatar_update on storage.objects for update to authenticated using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
 
 -- Admin access is backend-enforced: insert an admin user id manually from a trusted SQL session.
