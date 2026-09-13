@@ -3,10 +3,17 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null
+let client: ReturnType<typeof createClient> | null = null
+if (supabaseUrl && supabaseAnonKey) {
+  try {
+    client = createClient(supabaseUrl, supabaseAnonKey)
+  } catch (error) {
+    console.error('Supabase client configuration is invalid', error)
+  }
+}
+
+export const supabase = client
+export const isSupabaseConfigured = Boolean(client)
 
 export type Profile = {
   id: string
