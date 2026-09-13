@@ -1,6 +1,6 @@
 -- Kanni Mol Chat database contract
 -- Run this in Supabase SQL editor. Never put a service-role key in the frontend.
-extension if not exists pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -78,6 +78,7 @@ declare conversation_id uuid;
 begin
   if auth.uid() is null or target_user_id = auth.uid() then raise exception 'Invalid user'; end if;
   if exists (select 1 from public.user_blocks where (blocker_id = auth.uid() and blocked_id = target_user_id) or (blocker_id = target_user_id and blocked_id = auth.uid())) then raise exception 'This user is unavailable'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(least(auth.uid()::text, target_user_id::text) || ':' || greatest(auth.uid()::text, target_user_id::text), 0));
   select cm.conversation_id into conversation_id from public.conversation_members cm where cm.user_id = auth.uid() and exists (select 1 from public.conversation_members other where other.conversation_id = cm.conversation_id and other.user_id = target_user_id) limit 1;
   if conversation_id is null then
     insert into public.conversations default values returning id into conversation_id;
