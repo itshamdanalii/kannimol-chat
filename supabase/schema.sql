@@ -18,13 +18,16 @@ create index if not exists profiles_username_idx on public.profiles (username);
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, username, display_name)
-  values (
-    new.id,
-    lower(coalesce(new.raw_user_meta_data->>'username', 'user_' || replace(new.id::text, '-', ''))),
-    coalesce(new.raw_user_meta_data->>'display_name', 'New friend')
-  )
-  on conflict (id) do nothing;
+  if new.raw_user_meta_data->>'username' is not null
+     and lower(new.raw_user_meta_data->>'username') ~ '^[a-z0-9_.]{3,24}$' then
+    insert into public.profiles (id, username, display_name)
+    values (
+      new.id,
+      lower(new.raw_user_meta_data->>'username'),
+      coalesce(new.raw_user_meta_data->>'display_name', 'New friend')
+    )
+    on conflict (id) do nothing;
+  end if;
   return new;
 end;
 $$;

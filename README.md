@@ -18,7 +18,7 @@ The browser only receives the public anon key. Never expose a service-role key i
 - Enable Realtime for `messages` and `profiles` if presence updates are needed.
 - Create/configure the `avatars` Storage bucket; the SQL file includes scoped object policies.
 - Add an administrator with a trusted SQL session using `insert into public.app_admins(user_id) values ('...');`. Do not implement admin access with a frontend email check.
-- Email confirmation can be enabled in Auth settings. Set Supabase Auth > URL Configuration > Site URL to your deployed URL, for example `https://kanni-mol-chat.vercel.app`, and add `https://kanni-mol-chat.vercel.app/**` under Redirect URLs. Signup explicitly redirects confirmation links to the current site origin. Google users without a profile are sent through username setup.
+- Email confirmation can be enabled in Auth settings. Set Supabase Auth > URL Configuration > Site URL to your deployed URL, for example `https://kanni-mol-chat.vercel.app`, and add `https://kanni-mol-chat.vercel.app/**` under Redirect URLs. Signup explicitly redirects confirmation links to the current site origin. For Google, enable Google under Supabase Auth > Providers, create a Google OAuth Web application, set its authorized redirect URI to `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`, and add the Vercel URL to Supabase Redirect URLs. Google users without a profile are sent through username setup.
 
 ## Render deployment
 
