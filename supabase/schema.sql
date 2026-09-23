@@ -15,6 +15,24 @@ create table if not exists public.profiles (
 );
 create index if not exists profiles_username_idx on public.profiles (username);
 
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.profiles (id, username, display_name)
+  values (
+    new.id,
+    lower(coalesce(new.raw_user_meta_data->>'username', 'user_' || replace(new.id::text, '-', ''))),
+    coalesce(new.raw_user_meta_data->>'display_name', 'New friend')
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
 create table if not exists public.conversations (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
